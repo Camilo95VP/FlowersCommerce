@@ -6,6 +6,8 @@ export interface ProductoFactura {
 }
 
 export interface Factura {
+  // Nombre del archivo PDF
+  nombrePDF: string;
   // Tipo de documento
   cuentaCobro: boolean;
   remision: boolean;

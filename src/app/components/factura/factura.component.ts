@@ -28,14 +28,25 @@ export class FacturaComponent implements OnInit {
     this.agregarProducto(); // Agregar una fila inicial
   }
 
+  generarCodigoAlfanumerico(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let codigo = '';
+    for (let i = 0; i < 5; i++) {
+      codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return codigo;
+  }
+
   crearFormulario(): FormGroup {
     return this.fb.group({
+      // Nombre del PDF
+      nombrePDF: ['', Validators.required],
       // Tipo de documento
       cuentaCobro: [false],
       remision: [false],
       comprobante: [false],
       pedido: [false],
-      numero: ['', Validators.required],
+      numero: [{ value: this.generarCodigoAlfanumerico(), disabled: true }],
       
       // Información del cliente
       cliente: ['', Validators.required],
@@ -51,7 +62,7 @@ export class FacturaComponent implements OnInit {
       productos: this.fb.array([]),
       
       // Vendedor
-      vendedor: ['', Validators.required]
+      vendedor: ['RAMIRO CASTAÑEDA RIOS', Validators.required]
     });
   }
 
@@ -140,7 +151,8 @@ export class FacturaComponent implements OnInit {
         if (!this.facturaTemplate) {
           throw new Error('No se pudo encontrar el template de la factura');
         }
-        await this.facturaService.generarPDF(this.facturaTemplate.nativeElement, this.facturaGuardada!.numero);
+        const nombreArchivo = this.facturaGuardada!.nombrePDF || this.facturaGuardada!.numero;
+        await this.facturaService.generarPDF(this.facturaTemplate.nativeElement, nombreArchivo);
         alert('PDF generado exitosamente!');
       } catch (error) {
         alert('Error al generar el PDF');
@@ -154,7 +166,9 @@ export class FacturaComponent implements OnInit {
   nuevaFactura(): void {
     this.facturaForm.reset();
     this.facturaForm.patchValue({
-      fechaTransaccion: this.obtenerFechaActual()
+      fechaTransaccion: this.obtenerFechaActual(),
+      numero: this.generarCodigoAlfanumerico(),
+      vendedor: 'RAMIRO CASTAÑEDA RIOS'
     });
     this.productos.clear();
     this.agregarProducto();

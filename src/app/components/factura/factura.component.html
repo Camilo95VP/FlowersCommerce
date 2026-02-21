@@ -7,6 +7,14 @@
     <div class="card-body">
       <form [formGroup]="facturaForm" (ngSubmit)="guardarFactura()">
         
+        <!-- Nombre del PDF -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label for="nombrePDF" class="form-label">Nombre de la factura PDF:</label>
+            <input type="text" class="form-control" formControlName="nombrePDF" id="nombrePDF" placeholder="Ej: Factura-Cliente-Flores" required>
+          </div>
+        </div>
+
         <!-- Tipo de documento y número -->
         <div class="row mb-3">
           <div class="col-md-8">
@@ -30,7 +38,7 @@
           </div>
           <div class="col-md-4">
             <label for="numero" class="form-label">No.:</label>
-            <input type="text" class="form-control" formControlName="numero" id="numero" required>
+            <input type="text" class="form-control" formControlName="numero" id="numero" readonly>
           </div>
         </div>
 
@@ -78,7 +86,7 @@
           </div>
           <div class="col-md-6">
             <label for="vendedor" class="form-label">Vendedor:</label>
-            <input type="text" class="form-control" formControlName="vendedor" id="vendedor" required>
+            <input type="text" class="form-control" formControlName="vendedor" id="vendedor" required readonly>
           </div>
         </div>
 
