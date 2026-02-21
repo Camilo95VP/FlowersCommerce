@@ -1,0 +1,271 @@
+<div class="container-fluid p-4">
+  <!-- Formulario de Factura -->
+  <div class="card" *ngIf="!mostrarVistaPrevia">
+    <div class="card-header">
+      <h3>Crear Nueva Factura</h3>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="facturaForm" (ngSubmit)="guardarFactura()">
+        
+        <!-- Tipo de documento y número -->
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <p class="form-label mb-1">Tipo de Documento:</p>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" formControlName="cuentaCobro" id="cuentaCobro">
+              <label class="form-check-label" for="cuentaCobro">Cuenta de Cobro</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" formControlName="remision" id="remision">
+              <label class="form-check-label" for="remision">Remisión</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" formControlName="comprobante" id="comprobante">
+              <label class="form-check-label" for="comprobante">Comprobante de Venta</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" formControlName="pedido" id="pedido">
+              <label class="form-check-label" for="pedido">Pedido</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="numero" class="form-label">No.:</label>
+            <input type="text" class="form-control" formControlName="numero" id="numero" required>
+          </div>
+        </div>
+
+        <!-- Información del cliente -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="cliente" class="form-label">Señores:</label>
+            <input type="text" class="form-control" formControlName="cliente" id="cliente" required>
+          </div>
+          <div class="col-md-3">
+            <label for="cedula" class="form-label">C.C. o NIT:</label>
+            <input type="text" class="form-control" formControlName="cedula" id="cedula" required>
+          </div>
+          <div class="col-md-3">
+            <label for="fechaTransaccion" class="form-label">Fecha de Transacción:</label>
+            <input type="date" class="form-control" formControlName="fechaTransaccion" id="fechaTransaccion" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección:</label>
+            <input type="text" class="form-control" formControlName="direccion" id="direccion">
+          </div>
+          <div class="col-md-3">
+            <label for="telefono" class="form-label">Tel./Cel.:</label>
+            <input type="text" class="form-control" formControlName="telefono" id="telefono">
+          </div>
+          <div class="col-md-3">
+            <label for="contacto" class="form-label">Contacto:</label>
+            <input type="text" class="form-control" formControlName="contacto" id="contacto">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" formControlName="credito" id="credito">
+              <label class="form-check-label" for="credito">Crédito</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="plazo" class="form-label">Plazo:</label>
+            <input type="text" class="form-control" formControlName="plazo" id="plazo">
+          </div>
+          <div class="col-md-6">
+            <label for="vendedor" class="form-label">Vendedor:</label>
+            <input type="text" class="form-control" formControlName="vendedor" id="vendedor" required>
+          </div>
+        </div>
+
+        <!-- Productos -->
+        <h5 class="mt-4">Productos</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th style="width: 10%;">CANT.</th>
+                <th style="width: 50%;">DESCRIPCIÓN</th>
+                <th style="width: 15%;">VR. UNIDAD</th>
+                <th style="width: 15%;">VR. TOTAL</th>
+                <th style="width: 10%;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="productos">
+              <tr *ngFor="let producto of productos.controls; let i = index" [formGroupName]="i">
+                <td>
+                  <input type="number" class="form-control" formControlName="cantidad" min="0" step="0.01">
+                </td>
+                <td>
+                  <input type="text" class="form-control" formControlName="descripcion">
+                </td>
+                <td>
+                  <input type="number" class="form-control" formControlName="valorUnidad" min="0" step="0.01">
+                </td>
+                <td>
+                  <input type="number" class="form-control" formControlName="valorTotal" readonly>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger" (click)="eliminarProducto(i)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" (click)="agregarProducto()">
+          + Agregar Producto
+        </button>
+
+        <!-- Totales -->
+        <div class="row">
+          <div class="col-md-8"></div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <strong>SUB-TOTAL:</strong>
+                  <span>${{ calcularSubtotal() | number:'1.2-2' }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <strong>TOTAL:</strong>
+                  <span>${{ calcularTotal() | number:'1.2-2' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="row mt-4">
+          <div class="col-12">
+            <button type="submit" class="btn btn-success me-2" [disabled]="facturaForm.invalid || productos.length === 0">
+              Guardar Factura
+            </button>
+            <button type="button" class="btn btn-primary me-2" (click)="generarPDF()" [disabled]="!facturaGuardada">
+              Generar PDF
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="nuevaFactura()">
+              Nueva Factura
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Vista previa para PDF (oculta por defecto) -->
+  <div #facturaTemplate *ngIf="mostrarVistaPrevia && facturaGuardada" class="factura-pdf" style="display: block; background: white; padding: 20px; width: 210mm; min-height: 297mm;">
+    <!-- Encabezado -->
+    <div style="border: 2px solid #000; padding: 10px; margin-bottom: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 15px;">
+          <span *ngIf="facturaGuardada.cuentaCobro">☑ CUENTA DE COBRO</span>
+          <span *ngIf="!facturaGuardada.cuentaCobro">☐ CUENTA DE COBRO</span>
+          
+          <span *ngIf="facturaGuardada.remision">☑ REMISIÓN</span>
+          <span *ngIf="!facturaGuardada.remision">☐ REMISIÓN</span>
+          
+          <span *ngIf="facturaGuardada.comprobante">☑ COMPROBANTE DE VENTA</span>
+          <span *ngIf="!facturaGuardada.comprobante">☐ COMPROBANTE DE VENTA</span>
+          
+          <span *ngIf="facturaGuardada.pedido">☑ PEDIDO</span>
+          <span *ngIf="!facturaGuardada.pedido">☐ PEDIDO</span>
+        </div>
+        <div style="border: 1px solid #000; padding: 5px; min-width: 100px;">
+          No. {{ facturaGuardada.numero }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del cliente -->
+    <div style="border: 1px solid #000; margin-bottom: 10px;">
+      <div style="display: flex; padding: 5px;">
+        <div style="flex: 1; border-right: 1px solid #000; padding-right: 10px;">
+          <strong>SEÑORES:</strong> {{ facturaGuardada.cliente }}
+        </div>
+        <div style="flex: 1; padding-left: 10px;">
+          <strong>FECHA DE LA TRANSACCIÓN:</strong> {{ facturaGuardada.fechaTransaccion }}
+        </div>
+      </div>
+      
+      <div style="display: flex; padding: 5px; border-top: 1px solid #000;">
+        <div style="flex: 1; border-right: 1px solid #000; padding-right: 10px;">
+          <strong>C.C. O NIT:</strong> {{ facturaGuardada.cedula }}
+        </div>
+        <div style="flex: 1; padding-left: 10px;">
+          <strong>DIRECCIÓN:</strong> {{ facturaGuardada.direccion }}
+        </div>
+      </div>
+      
+      <div style="display: flex; padding: 5px; border-top: 1px solid #000;">
+        <div style="flex: 1; border-right: 1px solid #000; padding-right: 10px;">
+          <strong>TEL./CEL.:</strong> {{ facturaGuardada.telefono }}
+        </div>
+        <div style="padding-left: 10px;">
+          <strong>CONTACTO:</strong> {{ facturaGuardada.contacto }}
+          <span *ngIf="facturaGuardada.credito" style="margin-left: 20px;">☑ CRÉDITO</span>
+          <span *ngIf="!facturaGuardada.credito" style="margin-left: 20px;">☐ CRÉDITO</span>
+          <span style="margin-left: 20px;"><strong>PLAZO:</strong> {{ facturaGuardada.plazo }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de productos -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+      <thead>
+        <tr style="background-color: #4472C4; color: white;">
+          <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 10%;">CANT.</th>
+          <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 50%;">DESCRIPCIÓN</th>
+          <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 20%;">VR. UNIDAD</th>
+          <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 20%;">VR. TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of facturaGuardada.productos" style="min-height: 30px;">
+          <td style="border: 1px solid #000; padding: 5px; text-align: center;">{{ producto.cantidad }}</td>
+          <td style="border: 1px solid #000; padding: 5px;">{{ producto.descripcion }}</td>
+          <td style="border: 1px solid #000; padding: 5px; text-align: right;">${{ producto.valorUnidad | number:'1.2-2' }}</td>
+          <td style="border: 1px solid #000; padding: 5px; text-align: right;">${{ producto.valorTotal | number:'1.2-2' }}</td>
+        </tr>
+        <!-- Filas vacías para completar la tabla -->
+        <tr *ngFor="let i of [].constructor(Math.max(10 - facturaGuardada.productos.length, 0)); let idx = index" style="height: 30px;">
+          <td style="border: 1px solid #000; padding: 5px;">&nbsp;</td>
+          <td style="border: 1px solid #000; padding: 5px;">&nbsp;</td>
+          <td style="border: 1px solid #000; padding: 5px;">&nbsp;</td>
+          <td style="border: 1px solid #000; padding: 5px;">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pie de página -->
+    <div style="display: flex; gap: 10px;">
+      <div style="flex: 1; border: 1px solid #000; padding: 10px; height: 100px;">
+        <strong>Vendedor:</strong><br>
+        {{ facturaGuardada.vendedor }}
+      </div>
+      <div style="border: 1px solid #000; padding: 10px; text-align: center; height: 100px; min-width: 150px;">
+        <strong>Firma y Sello:</strong>
+        <div style="margin-top: 20px; border-bottom: 1px solid #000; width: 120px; height: 40px;"></div>
+        <small style="margin-top: 5px; display: block;">ACEPTADA</small>
+      </div>
+      <div style="border: 1px solid #000; padding: 10px; min-width: 150px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <strong>SUB-TOTAL $</strong>
+          <span>{{ facturaGuardada.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <hr style="border-top: 1px solid #000; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between;">
+          <strong>TOTAL $</strong>
+          <strong>{{ facturaGuardada.total | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

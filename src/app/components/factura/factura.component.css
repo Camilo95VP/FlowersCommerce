@@ -1,0 +1,88 @@
+.container-fluid {
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.form-check-input:checked {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+  border: none;
+}
+
+.table-bordered {
+  border: 2px solid #dee2e6;
+}
+
+.table thead th {
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+  color: white;
+  border: 1px solid #dee2e6;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 600;
+}
+
+.table tbody td {
+  vertical-align: middle;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+}
+
+.factura-pdf {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: -1;
+}
+
+/* Estilos para impresión y PDF */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .factura-pdf, .factura-pdf * {
+    visibility: visible;
+  }
+  .factura-pdf {
+    position: static;
+    left: auto;
+    top: auto;
+    z-index: auto;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.form-group + .form-group {
+  margin-top: 1rem;
+}
+
+.was-validated .form-control:invalid {
+  border-color: #dc3545;
+}
+
+.was-validated .form-control:valid {
+  border-color: #28a745;
+}

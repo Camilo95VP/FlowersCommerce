@@ -1,0 +1,155 @@
+<div class="container-fluid p-4">
+  <div class="row">
+    <!-- Lista de Facturas -->
+    <div [ngClass]="facturaSeleccionada ? 'col-md-6' : 'col-12'">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3>Lista de Facturas</h3>
+          <button class="btn btn-primary" routerLink="/factura">
+            <i class="fas fa-plus"></i> Nueva Factura
+          </button>
+        </div>
+        <div class="card-body">
+          <div *ngIf="facturas.length === 0" class="alert alert-info">
+            No hay facturas registradas.
+          </div>
+          
+          <div *ngIf="facturas.length > 0" class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>No. Factura</th>
+                  <th>Cliente</th>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Total</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let factura of facturas" 
+                    [class.table-active]="facturaSeleccionada?.id === factura.id">
+                  <td>{{ factura.numero }}</td>
+                  <td>{{ factura.cliente }}</td>
+                  <td>{{ factura.fechaTransaccion | date:'short' }}</td>
+                  <td>{{ getTipoDocumento(factura) }}</td>
+                  <td>${{ factura.total | number:'1.2-2' }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-outline-primary" 
+                              (click)="verFactura(factura)"
+                              title="Ver detalles">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="btn btn-outline-danger" 
+                              (click)="eliminarFactura(factura.id!)"
+                              title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalle de Factura -->
+    <div class="col-md-6" *ngIf="facturaSeleccionada">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4>Detalle de Factura #{{ facturaSeleccionada.numero }}</h4>
+          <button class="btn btn-sm btn-outline-secondary" (click)="cerrarDetalle()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <!-- Información básica -->
+          <div class="row mb-3">
+            <div class="col-6">
+              <strong>Cliente:</strong><br>
+              {{ facturaSeleccionada.cliente }}
+            </div>
+            <div class="col-6">
+              <strong>C.C. / NIT:</strong><br>
+              {{ facturaSeleccionada.cedula }}
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-6">
+              <strong>Fecha:</strong><br>
+              {{ facturaSeleccionada.fechaTransaccion | date:'short' }}
+            </div>
+            <div class="col-6">
+              <strong>Vendedor:</strong><br>
+              {{ facturaSeleccionada.vendedor }}
+            </div>
+          </div>
+
+          <div class="row mb-3" *ngIf="facturaSeleccionada.direccion || facturaSeleccionada.telefono">
+            <div class="col-6" *ngIf="facturaSeleccionada.direccion">
+              <strong>Dirección:</strong><br>
+              {{ facturaSeleccionada.direccion }}
+            </div>
+            <div class="col-6" *ngIf="facturaSeleccionada.telefono">
+              <strong>Teléfono:</strong><br>
+              {{ facturaSeleccionada.telefono }}
+            </div>
+          </div>
+
+          <!-- Tipo de documento -->
+          <div class="mb-3">
+            <strong>Tipo de Documento:</strong><br>
+            <span class="badge bg-secondary">{{ getTipoDocumento(facturaSeleccionada) }}</span>
+          </div>
+
+          <!-- Productos -->
+          <h6>Productos:</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Cant.</th>
+                  <th>Descripción</th>
+                  <th>Vr. Unit.</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let producto of facturaSeleccionada.productos">
+                  <td>{{ producto.cantidad }}</td>
+                  <td>{{ producto.descripcion }}</td>
+                  <td>${{ producto.valorUnidad | number:'1.2-2' }}</td>
+                  <td>${{ producto.valorTotal | number:'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Totales -->
+          <div class="border-top pt-2">
+            <div class="row">
+              <div class="col-6">
+                <strong>Subtotal:</strong>
+              </div>
+              <div class="col-6 text-end">
+                ${{ facturaSeleccionada.subtotal | number:'1.2-2' }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <strong>Total:</strong>
+              </div>
+              <div class="col-6 text-end">
+                <strong>${{ facturaSeleccionada.total | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
