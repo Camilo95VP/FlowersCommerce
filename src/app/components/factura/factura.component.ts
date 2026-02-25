@@ -9,6 +9,9 @@ import { Factura, ProductoFactura } from '../../models/factura.model';
   styleUrls: ['./factura.component.css']
 })
 export class FacturaComponent implements OnInit {
+  clientes: any[] = [];
+  mostrarInputOtroCliente = false;
+  otroCliente = '';
   @ViewChild('facturaTemplate', { static: false }) facturaTemplate!: ElementRef;
   
   facturaForm: FormGroup;
@@ -26,6 +29,15 @@ export class FacturaComponent implements OnInit {
 
   ngOnInit(): void {
     this.agregarProducto(); // Agregar una fila inicial
+    this.cargarClientes();
+  }
+
+  cargarClientes(): void {
+    fetch('assets/clientes.json')
+      .then(res => res.json())
+      .then(data => {
+        this.clientes = data;
+      });
   }
 
   generarCodigoAlfanumerico(): string {
@@ -44,16 +56,16 @@ export class FacturaComponent implements OnInit {
       // Tipo de documento
       cuentaCobro: [false],
       remision: [false],
-      comprobante: [false],
+      comprobante: [true],
       pedido: [false],
       numero: [{ value: this.generarCodigoAlfanumerico(), disabled: true }],
       
       // Información del cliente
-      cliente: ['', Validators.required],
-      cedula: ['', Validators.required],
+      cliente: [''],
+      cedula: [''],
       direccion: [''],
       telefono: [''],
-      contacto: [''],
+      contado: [true], // Ahora es booleano
       credito: [false],
       plazo: [''],
       fechaTransaccion: [this.obtenerFechaActual(), Validators.required],
@@ -120,7 +132,8 @@ export class FacturaComponent implements OnInit {
   }
 
   guardarFactura(): void {
-    if (this.facturaForm.valid && this.productos.length > 0) {
+    const clienteValue = this.facturaForm.get('cliente')?.value;
+    if (clienteValue && this.productos.length > 0) {
       const formValue = this.facturaForm.getRawValue();
       const factura: Factura = {
         ...formValue,
@@ -168,11 +181,37 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.patchValue({
       fechaTransaccion: this.obtenerFechaActual(),
       numero: this.generarCodigoAlfanumerico(),
-      vendedor: 'RAMIRO CASTAÑEDA RIOS'
+      vendedor: 'RAMIRO CASTAÑEDA RIOS',
+      comprobante: true,
+      contado: true,
+      cliente: this.clientes.length > 0 ? this.clientes[0].nombre : ''
     });
+    this.mostrarInputOtroCliente = false;
+    this.otroCliente = '';
     this.productos.clear();
     this.agregarProducto();
     this.facturaGuardada = null;
     this.mostrarVistaPrevia = false;
+  }
+
+  onClienteChange(event: any): void {
+    const value = event.target.value;
+    if (value === 'otro') {
+      this.mostrarInputOtroCliente = true;
+      this.facturaForm.patchValue({ cliente: '' });
+    } else {
+      this.mostrarInputOtroCliente = false;
+      this.otroCliente = '';
+      this.facturaForm.patchValue({ cliente: value });
+      // Autocompletar cedula, telefono, direccion
+      const clienteObj = this.clientes.find(c => c.nombre === value);
+      if (clienteObj) {
+        this.facturaForm.patchValue({
+          cedula: clienteObj.cedula || '',
+          telefono: clienteObj.telefono || '',
+          direccion: clienteObj.direccion || ''
+        });
+      }
+    }
   }
 }

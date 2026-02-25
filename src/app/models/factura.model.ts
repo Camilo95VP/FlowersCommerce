@@ -20,7 +20,7 @@ export interface Factura {
   cedula: string;
   direccion: string;
   telefono: string;
-  contacto: string;
+  contado: boolean;
   credito: boolean;
   plazo: string;
   fechaTransaccion: string;

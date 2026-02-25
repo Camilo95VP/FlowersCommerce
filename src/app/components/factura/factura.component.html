@@ -46,7 +46,11 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="cliente" class="form-label">Señores:</label>
-            <input type="text" class="form-control" formControlName="cliente" id="cliente" required>
+            <select class="form-select" formControlName="cliente" id="cliente" (change)="onClienteChange($event)">
+              <option *ngFor="let c of clientes" [value]="c.nombre">{{ c.nombre }}</option>
+              <option value="otro">Otro</option>
+            </select>
+            <input *ngIf="mostrarInputOtroCliente" type="text" class="form-control mt-2" [(ngModel)]="otroCliente" placeholder="Ingrese nuevo cliente">
           </div>
           <div class="col-md-3">
             <label for="cedula" class="form-label">C.C. o NIT:</label>
@@ -67,17 +71,17 @@
             <label for="telefono" class="form-label">Tel./Cel.:</label>
             <input type="text" class="form-control" formControlName="telefono" id="telefono">
           </div>
-          <div class="col-md-3">
-            <label for="contacto" class="form-label">Contacto:</label>
-            <input type="text" class="form-control" formControlName="contacto" id="contacto">
-          </div>
         </div>
 
         <div class="row mb-3">
-          <div class="col-md-3">
-            <div class="form-check">
+          <div class="col-md-3 d-flex align-items-center">
+            <div class="form-check me-3">
               <input class="form-check-input" type="checkbox" formControlName="credito" id="credito">
               <label class="form-check-label" for="credito">Crédito</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" formControlName="contado" id="contado">
+              <label class="form-check-label" for="contado">Contado</label>
             </div>
           </div>
           <div class="col-md-3">
@@ -153,7 +157,7 @@
         <!-- Botones de acción -->
         <div class="row mt-4">
           <div class="col-12">
-            <button type="submit" class="btn btn-success me-2" [disabled]="facturaForm.invalid || productos.length === 0">
+            <button type="submit" class="btn btn-success me-2" [disabled]="productos.length === 0">
               Guardar Factura
             </button>
             <button type="button" class="btn btn-primary me-2" (click)="generarPDF()" [disabled]="!facturaGuardada">
@@ -217,7 +221,11 @@
           <strong>TEL./CEL.:</strong> {{ facturaGuardada.telefono }}
         </div>
         <div style="padding-left: 10px;">
-          <strong>CONTACTO:</strong> {{ facturaGuardada.contacto }}
+          <span>
+            <strong>CONTADO:</strong>
+            <span *ngIf="facturaGuardada.contado">☑</span>
+            <span *ngIf="!facturaGuardada.contado">☐</span>
+          </span>
           <span *ngIf="facturaGuardada.credito" style="margin-left: 20px;">☑ CRÉDITO</span>
           <span *ngIf="!facturaGuardada.credito" style="margin-left: 20px;">☐ CRÉDITO</span>
           <span style="margin-left: 20px;"><strong>PLAZO:</strong> {{ facturaGuardada.plazo }}</span>
